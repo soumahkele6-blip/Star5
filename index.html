@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Star 5 TV - Régie Mobile</title>
+    <title>Star 5 TV - Régie Mobile Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -37,7 +37,7 @@
             align-items: center;
             border-bottom: 3px solid var(--gn-yellow);
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .brand-box {
@@ -58,7 +58,7 @@
             font-weight: bold;
         }
 
-        /* ÉCRAN TÉLÉVISION */
+        /* ÉCRAN TV PRINCIPAL */
         .tv-screen-box {
             position: relative;
             width: 100%;
@@ -76,44 +76,45 @@
             object-fit: cover;
         }
 
-        video {
-            display: none;
-        }
+        video { display: none; }
 
-        /* PANNEAU DE CONTRÔLE */
+        /* PANNEAU DE CONTRÔLE RÉGIE */
         .studio-panel {
             background: var(--bg-card);
             border-radius: 10px;
-            padding: 15px;
-            margin-top: 12px;
+            padding: 12px;
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .btn-main {
-            padding: 14px;
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 12px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: white;
+            text-align: center;
         }
 
-        .btn-start { background: var(--gn-green); }
-        .btn-cam { background: #3b82f6; }
-        .btn-rec { background: var(--gn-red); }
-
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .btn-green { background: var(--gn-green); }
+        .btn-blue  { background: #2563eb; }
+        .btn-red   { background: var(--gn-red); }
+        .btn-dark  { background: #374151; }
+        .btn-share { background: #25D366; } /* Couleur WhatsApp */
 
         input[type="text"] {
             width: 100%;
@@ -125,21 +126,19 @@
             font-size: 0.85rem;
         }
 
-        /* REPLAYS */
-        .replays-list {
+        /* REPLAYS ET FICHIERS */
+        .replays-section {
             margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
         .replay-item {
             background: var(--bg-card);
-            padding: 10px;
+            padding: 10px 12px;
             border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 8px;
             border-left: 4px solid var(--gn-green);
         }
 
@@ -148,6 +147,7 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 0.85rem;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -156,7 +156,6 @@
     <!-- ENTÊTE -->
     <header>
         <div class="brand-box">
-            <!-- Logo Star 5 TV Guinée -->
             <svg width="35" height="35" viewBox="0 0 100 100">
                 <defs>
                     <mask id="starMask">
@@ -181,110 +180,167 @@
         </div>
     </header>
 
-    <!-- ÉCRAN DE DIFFUSION -->
+    <!-- ÉCRAN PRINCIPAL DE DIFFUSION -->
     <div class="tv-screen-box">
         <video id="rawVideo" playsinline webkit-playsinline muted autoplay></video>
+        <video id="fileVideo" playsinline webkit-playsinline loop style="display:none;"></video>
         <canvas id="tvCanvas" width="1280" height="720"></canvas>
     </div>
 
-    <!-- COMMANDES DE GESTION -->
+    <!-- PANNEAU RÉGIE -->
     <div class="studio-panel">
-        
-        <!-- BOUTON PRIMORDIAL POUR LE TÉLÉPHONE -->
-        <button id="startCamBtn" class="btn-main btn-start" onclick="demarrerCamera()">
-            <i class="fas fa-power-off"></i> 1. ACTIVER MA CAMÉRA
+
+        <!-- BOUTON DÉMARRAGE -->
+        <button id="startCamBtn" class="btn btn-green" onclick="demarrerCamera()">
+            <i class="fas fa-power-off"></i> 1. ACTIVER LE DIRECT (CAMÉRA)
         </button>
 
-        <div id="regieControls" style="display: none; flex-direction: column; gap: 10px;">
-            <input type="text" id="titreEmission" value="STAR 5 TV : DIRECT CONAKRY" placeholder="Titre du bandeau en direct...">
+        <!-- COMMANDES AVANCÉES -->
+        <div id="controlsBox" style="display:none; flex-direction: column; gap: 10px;">
+            <input type="text" id="titreEmission" value="STAR 5 TV : DIRECT SPÉCIAL" placeholder="Titre du bandeau TV...">
 
-            <div class="btn-row">
-                <button class="btn-main btn-cam" onclick="changerObjectif()">
-                    <i class="fas fa-sync-alt"></i> Tourner Caméra
+            <!-- LIGNE 1 : RÉGLAGE DE L'IMAGE ET TAILLE -->
+            <div class="btn-grid">
+                <button class="btn btn-dark" onclick="ajusterCadrage()">
+                    <i class="fas fa-expand"></i> Cadrage : <span id="fitText" style="color:var(--gn-yellow)">Plein Écran</span>
                 </button>
-                <button class="btn-main btn-rec" id="recBtn" onclick="gererEnregistrement()">
-                    <i class="fas fa-circle"></i> Enregistrer
+                <button class="btn btn-blue" onclick="changerCamera()">
+                    <i class="fas fa-camera-rotate"></i> Tourner Caméra
                 </button>
             </div>
+
+            <!-- LIGNE 2 : ENREGISTREMENT ET FICHIER DU TÉLÉPHONE -->
+            <div class="btn-grid">
+                <button class="btn btn-red" id="recBtn" onclick="gererEnregistrement()">
+                    <i class="fas fa-circle"></i> Enregistrer
+                </button>
+
+                <!-- BOUTON POUR PRENDRE UNE VIDÉO DANS LE TÉLÉPHONE -->
+                <label class="btn btn-dark" style="margin:0;">
+                    <i class="fas fa-folder-open"></i> Vidéo Téléphone
+                    <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="chargerVideoLocale(event)">
+                </label>
+            </div>
+
+            <!-- BOUTON DE PARTAGE MULTI-RÉSEAUX -->
+            <button class="btn btn-share" onclick="partagerSurReseaux()">
+                <i class="fas fa-share-nodes"></i> PARTAGER LE DIRECT (WhatsApp, Facebook...)
+            </button>
         </div>
     </div>
 
-    <!-- LISTE DES REPLAYS -->
-    <h3 style="font-size: 0.9rem; margin-top: 15px; color: var(--gn-yellow);">Émissions Enregistrées</h3>
-    <div class="replays-list" id="replaysList"></div>
+    <!-- LISTE DES VIDÉOS & REPLAYS -->
+    <div class="replays-section">
+        <h3 style="font-size: 0.9rem; color: var(--gn-yellow); margin-bottom: 5px;">
+            <i class="fas fa-film"></i> Replays et Enregistrements
+        </h3>
+        <div id="replaysList"></div>
+    </div>
 
     <script>
         const video = document.getElementById('rawVideo');
+        const fileVideo = document.getElementById('fileVideo');
         const canvas = document.getElementById('tvCanvas');
         const ctx = canvas.getContext('2d');
         const titreInput = document.getElementById('titreEmission');
         const liveBadge = document.getElementById('liveBadge');
 
         let cameraStream = null;
-        let modeCamera = 'user'; // 'user' = selfie, 'environment' = arrière
+        let modeCamera = 'environment'; // Caméra arrière par défaut
+        let sourceActive = 'camera'; // 'camera' ou 'fichier'
+        let modeCadrage = 'cover';   // 'cover' (plein écran) ou 'contain' (bordures)
         let mediaRecorder = null;
         let recordedChunks = [];
         let enEnregistrement = false;
 
-        // Message d'attente initial sur l'écran
+        // Écran de veille initial
         ctx.fillStyle = "#11141c";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 30px Arial";
+        ctx.font = "bold 26px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("Touchez 'ACTIVER MA CAMÉRA' ci-dessous", canvas.width / 2, canvas.height / 2);
+        ctx.fillText("STAR 5 TV GUINÉE - PRÊT", canvas.width / 2, canvas.height / 2);
 
-        // 1. ALLUMER LA CAMÉRA (ACTION TACTILE OBLIGATOIRE SUR MOBILE)
+        // 1. ALLUMER LA CAMÉRA
         async function demarrerCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(t => t.stop());
-            }
+            sourceActive = 'camera';
+            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
 
             try {
-                // Demande caméra + micro
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: modeCamera },
                     audio: true
                 });
-
                 video.srcObject = cameraStream;
-                
-                // FORCE LE SMARTPHONE À LIRE LA VIDÉO
                 await video.play();
 
                 document.getElementById('startCamBtn').style.display = 'none';
-                document.getElementById('regieControls').style.display = 'flex';
+                document.getElementById('controlsBox').style.display = 'flex';
                 liveBadge.style.background = "#CE1126";
                 liveBadge.innerHTML = '<i class="fas fa-circle"></i> EN DIRECT';
 
-                // Lancement de l'affichage en continu
-                dessinerPlateauTV();
-
+                dessinerRegie();
             } catch (err) {
-                alert("Erreur d'accès : Assurez-vous d'avoir cliqué sur 'Autoriser' pour la caméra et le micro dans votre navigateur.");
-                console.error(err);
+                alert("Autorisez l'accès à la caméra et au micro.");
             }
         }
 
-        // 2. BASCULER ENTRE CAMÉRA AVANT ET ARRIÈRE
-        function changerObjectif() {
+        // 2. TOURNER LA CAMÉRA (AVANT / ARRIÈRE)
+        function changerCamera() {
             modeCamera = (modeCamera === 'user') ? 'environment' : 'user';
             demarrerCamera();
         }
 
-        // 3. DESSINER LE LOGO DE GUINÉE ET LE BANDEAU SUR L'IMAGE
-        function dessinerPlateauTV() {
-            if (video.readyState >= 2) {
-                // Afficher l'image de la caméra
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // 3. AJUSTER L'IMAGE ET LE CADRAGE À L'ÉCRAN
+        function ajusterCadrage() {
+            modeCadrage = (modeCadrage === 'cover') ? 'contain' : 'cover';
+            document.getElementById('fitText').innerText = (modeCadrage === 'cover') ? 'Plein Écran' : 'Format 16:9';
+        }
+
+        // 4. PRENDRE UNE VIDÉO / FICHIER DANS LE TÉLÉPHONE POUR LA DIFFUSER
+        function chargerVideoLocale(event) {
+            const fichier = event.target.files[0];
+            if (fichier) {
+                const url = URL.createObjectURL(fichier);
+                fileVideo.src = url;
+                fileVideo.play();
+                sourceActive = 'fichier';
+                liveBadge.innerHTML = '<i class="fas fa-film"></i> DIFFUSION FICHIER';
+                liveBadge.style.background = "#2563eb";
+            }
+        }
+
+        // 5. MOTEUR D'AFFICHAGE DU PLATEAU TV
+        function dessinerRegie() {
+            const sourceVideo = (sourceActive === 'camera') ? video : fileVideo;
+
+            if (sourceVideo.readyState >= 2) {
+                // Fond noir
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Gestion du Cadrage (Ajustement de l'image)
+                if (modeCadrage === 'cover') {
+                    // Plein écran ajusté sans bordures
+                    const hRatio = canvas.width / sourceVideo.videoWidth;
+                    const vRatio = canvas.height / sourceVideo.videoHeight;
+                    const ratio = Math.max(hRatio, vRatio);
+                    const centerShiftX = (canvas.width - sourceVideo.videoWidth * ratio) / 2;
+                    const centerShiftY = (canvas.height - sourceVideo.videoHeight * ratio) / 2;
+                    ctx.drawImage(sourceVideo, 0, 0, sourceVideo.videoWidth, sourceVideo.videoHeight,
+                                  centerShiftX, centerShiftY, sourceVideo.videoWidth * ratio, sourceVideo.videoHeight * ratio);
+                } else {
+                    // Respect strict des proportions 16:9
+                    ctx.drawImage(sourceVideo, 0, 0, canvas.width, canvas.height);
+                }
 
                 // --- LOGO GUINÉE EN HAUT À DROITE ---
                 const lx = canvas.width - 150;
                 const ly = 25;
-                ctx.fillStyle = "rgba(0,0,0,0.6)";
+                ctx.fillStyle = "rgba(0,0,0,0.65)";
                 ctx.fillRect(lx - 10, ly - 5, 140, 45);
 
-                // Barres Rouge - Jaune - Vert
+                // Drapeau de Guinée (Rouge, Jaune, Vert)
                 ctx.fillStyle = "#CE1126"; ctx.fillRect(lx, ly, 8, 35);
                 ctx.fillStyle = "#FCD116"; ctx.fillRect(lx + 8, ly, 8, 35);
                 ctx.fillStyle = "#009639"; ctx.fillRect(lx + 16, ly, 8, 35);
@@ -308,52 +364,41 @@
                 ctx.font = "20px Arial";
                 ctx.fillText(titreInput.value, 190, by + 32);
             }
-            requestAnimationFrame(dessinerPlateauTV);
+            requestAnimationFrame(dessinerRegie);
         }
 
-        // 4. SYSTÈME D'ENREGISTREMENT SUR LE TÉLÉPHONE
+        // 6. ENREGISTREMENT DE L'ÉMISSION
         function gererEnregistrement() {
             const btn = document.getElementById('recBtn');
 
             if (!enEnregistrement) {
                 recordedChunks = [];
-                const streamAEnregistrer = canvas.captureStream(30);
+                const stream = canvas.captureStream(30);
 
                 if (cameraStream && cameraStream.getAudioTracks().length > 0) {
-                    streamAEnregistrer.addTrack(cameraStream.getAudioTracks()[0]);
+                    stream.addTrack(cameraStream.getAudioTracks()[0]);
                 }
 
-                // Format supporté sur mobile
-                let typeOptions = { mimeType: 'video/webm' };
+                let options = { mimeType: 'video/webm' };
                 if (!MediaRecorder.isTypeSupported('video/webm')) {
-                    typeOptions = { mimeType: 'video/mp4' };
+                    options = { mimeType: 'video/mp4' };
                 }
 
-                mediaRecorder = new MediaRecorder(streamAEnregistrer, typeOptions);
-
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data.size > 0) recordedChunks.push(e.data);
-                };
+                mediaRecorder = new MediaRecorder(stream, options);
+                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
 
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-                    const urlVideo = URL.createObjectURL(blob);
+                    const videoUrl = URL.createObjectURL(blob);
 
-                    // Téléchargement automatique sur le téléphone
-                    const telechargement = document.createElement('a');
-                    telechargement.href = urlVideo;
-                    telechargement.download = `Star5TV_${Date.now()}.mp4`;
-                    telechargement.click();
+                    // Téléchargement dans la mémoire du téléphone
+                    const a = document.createElement('a');
+                    a.href = videoUrl;
+                    a.download = `Star5TV_${Date.now()}.mp4`;
+                    a.click();
 
-                    // Ajout dans la liste des Replays
-                    const replays = document.getElementById('replaysList');
-                    const div = document.createElement('div');
-                    div.className = 'replay-item';
-                    div.innerHTML = `
-                        <div><strong>${titreInput.value}</strong><br><small style="color:#888">Enregistré</small></div>
-                        <a href="${urlVideo}" target="_blank"><i class="fas fa-play"></i> Revoir</a>
-                    `;
-                    replays.prepend(div);
+                    // Ajouter dans la liste pour revoir et partager
+                    ajouterReplay(titreInput.value, videoUrl, blob);
                 };
 
                 mediaRecorder.start();
@@ -365,7 +410,56 @@
                 enEnregistrement = false;
                 btn.innerHTML = '<i class="fas fa-circle"></i> Enregistrer';
                 btn.style.background = "var(--gn-red)";
-                alert("Votre émission est enregistrée et téléchargée sur votre téléphone !");
+            }
+        }
+
+        // 7. PARTAGER LE DIRECT SUR LES RÉSEAUX SOCIAUX
+        function partagerSurReseaux() {
+            const urlSite = window.location.href;
+            const message = `🔴 Regardez le direct sur Star 5 TV Guinée : ${titreInput.value}\nLien : ${urlSite}`;
+
+            if (navigator.share) {
+                // Partage natif Android / iPhone (WhatsApp, Facebook, SMS...)
+                navigator.share({
+                    title: 'Star 5 TV Guinée',
+                    text: message,
+                    url: urlSite
+                }).catch(() => {});
+            } else {
+                // Secours direct vers WhatsApp
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+            }
+        }
+
+        // 8. GESTION DES REPLAYS ET PARTAGE DES FICHIERS ENREGISTRÉS
+        function ajouterReplay(titre, url, blob) {
+            const list = document.getElementById('replaysList');
+            const item = document.createElement('div');
+            item.className = 'replay-item';
+            item.innerHTML = `
+                <div>
+                    <strong>${titre}</strong><br>
+                    <small style="color:#888">Enregistré dans le téléphone</small>
+                </div>
+                <div>
+                    <a href="${url}" target="_blank"><i class="fas fa-play"></i> Revoir</a>
+                    <a href="#" onclick="partagerFichierVideo('${titre}', '${url}')" style="color:var(--gn-green); margin-left:12px;">
+                        <i class="fas fa-share-nodes"></i> Partager
+                    </a>
+                </div>
+            `;
+            list.prepend(item);
+        }
+
+        function partagerFichierVideo(titre, url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: titre,
+                    text: `Regardez cette émission enregistrée sur Star 5 TV Guinée !`,
+                    url: url
+                }).catch(() => {});
+            } else {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Regardez l\'émission Star 5 TV : ' + url)}`, '_blank');
             }
         }
     </script>
